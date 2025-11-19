@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Enigma RPG — Simples</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: black;
+      color: #ff2e2e;
+      font-family: monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+      width: 240px;
+      position: relative;
+      z-index: 2;
+      padding: 20px;
+    }
+    .display {
+      background: black;
+      border: 1px solid #ff2e2e;
+      color: #ff2e2e;
+      padding: 10px;
+      border-radius: 3px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: 4px;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+    button {
+      background: black;
+      color: #ff2e2e;
+      border: 1px solid #ff2e2e;
+      padding: 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: background 0.1s;
+    }
+    button:hover {
+      background: #220000;
+    }
+    .msg {
+      height: 20px;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #ff2e2e;
+    }
+    .loading {
+      position: fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:black;
+      color:#ff2e2e;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      z-index:5;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity 1s ease;
+    }
+    .loading.active { opacity:1; pointer-events:auto; }
+    .tabs-container {
+      display: none;
+      text-align:center;
+      border:1px solid #ff2e2e;
+      border-radius:5px;
+      padding:15px;
+      background: rgba(0,0,0,0.9);
+    }
+    .tab {
+      border:1px solid #ff2e2e;
+      padding:8px;
+      border-radius:3px;
+      margin:3px;
+      cursor:pointer;
+      display:inline-block;
+      font-size:16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginBox">
+    <div class="display" id="display">----</div>
+    <div class="buttons">
+      <button>1</button><button>2</button><button>3</button>
+      <button>4</button><button>5</button><button>6</button>
+      <button>7</button><button>8</button><button>9</button>
+      <button>0</button><button id="clear">C</button><button id="enter">OK</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="loading" id="loading">CARREGANDO...</div>
+  <div class="tabs-container" id="tabs">
+    <div class="tab">Aba 1</div>
+    <div class="tab">Aba 2</div>
+    <div class="tab">Aba 3</div>
+    <div class="tab">Aba 4</div>
+  </div>
+
+  <script>
+    const PASSWORD = '8464';
+    let input = '';
+    let passwordIndex = 0;
+
+    const display = document.getElementById('display');
+    const msg = document.getElementById('msg');
+    const loginBox = document.getElementById('loginBox');
+    const loading = document.getElementById('loading');
+    const tabs = document.getElementById('tabs');
+    const buttons = document.querySelectorAll('.buttons button');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.textContent;
+        if(val==='C'){ 
+          input=''; display.textContent='----'; msg.textContent=''; passwordIndex=0; 
+        } else if(val==='OK') {
+          if(input===PASSWORD){
+            msg.textContent='Acesso liberado';
+            setTimeout(()=>{
+              loginBox.style.display='none';
+              loading.classList.add('active');
+              setTimeout(()=>{
+                loading.classList.remove('active');
+                tabs.style.display='block';
+              },2000);
+            },500);
+          } else {
+            msg.textContent='Senha incorreta';
+          }
+        } else {
+          if(input.length<4){
+            input+=val;
+            display.textContent = input.padEnd(4,'-');
+            if(val === PASSWORD[passwordIndex]){
+              passwordIndex++;
+              // efeito simples: botão acende levemente
+              btn.style.background='#ff4444';
+              setTimeout(()=>{ btn.style.background='black'; },150);
+            } else passwordIndex=0;
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
